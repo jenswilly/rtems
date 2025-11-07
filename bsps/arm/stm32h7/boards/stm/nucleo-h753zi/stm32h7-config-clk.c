@@ -25,61 +25,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef LIBBSP_ARM_STM32H7_BSP_H
-#define LIBBSP_ARM_STM32H7_BSP_H
-
-#include <bsp/default-initial-extension.h>
-#include <bspopts.h>
-#include <rtems.h>
-
-#ifdef __cplusplus
-extern "C" {
+#ifdef HAVE_CONFIG_H
+#include "config.h"
 #endif
 
-/**
- * @defgroup RTEMSBSPsARMSTM32H7 STM32H7
- *
- * @ingroup RTEMSBSPsARM
- *
- * @brief STM32H7 Board Support Package.
- *
- * @{
- */
+#include <stm32h7/hal.h>
 
-#define BSP_FEATURE_IRQ_EXTENSION
-
-#define BSP_ARMV7M_IRQ_PRIORITY_DEFAULT (13 << 4)
-
-#define BSP_ARMV7M_SYSTICK_PRIORITY (14 << 4)
-
-#define BSP_ARMV7M_SYSTICK_FREQUENCY stm32h7_systick_frequency()
-
-uint32_t stm32h7_systick_frequency(void);
-
-/* default functions */
-void stm32h7_init_power(void);
-void stm32h7_init_oscillator(void);
-void stm32h7_init_clocks(void);
-void stm32h7_init_peripheral_clocks(void);
-void stm32h7_init_qspi(void);
-void SystemInit_ExtMemCtl(void);
-
-/**
- * @brief Register SPI interfaces
- *
- * This initializes and registers the configured SPI devices with the RTEMS SPI
- * framework. SPI devices are configured at BSP build time.
- */
-void stm32h7_register_spi_devices(void);
-
-/* GPIO pin config */
-#define BSP_GPIO_PIN_COUNT     128
-#define BSP_GPIO_PINS_PER_BANK 32
-
-/** @} */
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* LIBBSP_ARM_STM32H7_BSP_H */
+const RCC_ClkInitTypeDef stm32h7_config_clocks = {
+  .ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
+    | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2
+    | RCC_CLOCKTYPE_D3PCLK1 | RCC_CLOCKTYPE_D1PCLK1,
+  .SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK,
+  .SYSCLKDivider = RCC_SYSCLK_DIV1,
+  .AHBCLKDivider = RCC_HCLK_DIV2,
+  .APB3CLKDivider = RCC_APB3_DIV2,
+  .APB1CLKDivider = RCC_APB1_DIV2,
+  .APB2CLKDivider = RCC_APB2_DIV2,
+  .APB4CLKDivider = RCC_APB4_DIV2
+};

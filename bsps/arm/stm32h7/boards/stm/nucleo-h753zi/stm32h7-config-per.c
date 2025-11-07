@@ -25,61 +25,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef LIBBSP_ARM_STM32H7_BSP_H
-#define LIBBSP_ARM_STM32H7_BSP_H
-
-#include <bsp/default-initial-extension.h>
-#include <bspopts.h>
-#include <rtems.h>
-
-#ifdef __cplusplus
-extern "C" {
+#ifdef HAVE_CONFIG_H
+#include "config.h"
 #endif
 
-/**
- * @defgroup RTEMSBSPsARMSTM32H7 STM32H7
- *
- * @ingroup RTEMSBSPsARM
- *
- * @brief STM32H7 Board Support Package.
- *
- * @{
- */
+#include <stm32h7/hal.h>
 
-#define BSP_FEATURE_IRQ_EXTENSION
-
-#define BSP_ARMV7M_IRQ_PRIORITY_DEFAULT (13 << 4)
-
-#define BSP_ARMV7M_SYSTICK_PRIORITY (14 << 4)
-
-#define BSP_ARMV7M_SYSTICK_FREQUENCY stm32h7_systick_frequency()
-
-uint32_t stm32h7_systick_frequency(void);
-
-/* default functions */
-void stm32h7_init_power(void);
-void stm32h7_init_oscillator(void);
-void stm32h7_init_clocks(void);
-void stm32h7_init_peripheral_clocks(void);
-void stm32h7_init_qspi(void);
-void SystemInit_ExtMemCtl(void);
-
-/**
- * @brief Register SPI interfaces
- *
- * This initializes and registers the configured SPI devices with the RTEMS SPI
- * framework. SPI devices are configured at BSP build time.
- */
-void stm32h7_register_spi_devices(void);
-
-/* GPIO pin config */
-#define BSP_GPIO_PIN_COUNT     128
-#define BSP_GPIO_PINS_PER_BANK 32
-
-/** @} */
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* LIBBSP_ARM_STM32H7_BSP_H */
+const RCC_PeriphCLKInitTypeDef stm32h7_config_peripheral_clocks = {
+  .PeriphClockSelection = RCC_PERIPHCLK_RTC | RCC_PERIPHCLK_USART3
+    | RCC_PERIPHCLK_FDCAN | RCC_PERIPHCLK_USART1 | RCC_PERIPHCLK_I2C1
+    | RCC_PERIPHCLK_USB | RCC_PERIPHCLK_FMC | RCC_PERIPHCLK_RNG,
+  .PLL2.PLL2M = 3,
+  .PLL2.PLL2N = 48,
+  .PLL2.PLL2P = 1,
+  .PLL2.PLL2Q = 2,
+  .PLL2.PLL2R = 2,
+  .PLL2.PLL2RGE = RCC_PLL2VCIRANGE_3,
+  .PLL2.PLL2VCOSEL = RCC_PLL2VCOWIDE,
+  .PLL2.PLL2FRACN = 0,
+  .PLL3.PLL3M = 25,
+  .PLL3.PLL3N = 192,
+  .PLL3.PLL3P = 2,
+  .PLL3.PLL3Q = 4,
+  .PLL3.PLL3R = 2,
+  .PLL3.PLL3RGE = RCC_PLL3VCIRANGE_0,
+  .PLL3.PLL3VCOSEL = RCC_PLL3VCOWIDE,
+  .PLL3.PLL3FRACN = 0,
+  .FmcClockSelection = RCC_FMCCLKSOURCE_PLL2,
+  .FdcanClockSelection = RCC_FDCANCLKSOURCE_PLL,
+  .Usart234578ClockSelection = RCC_USART234578CLKSOURCE_D2PCLK1,
+  .Usart16ClockSelection = RCC_USART16CLKSOURCE_D2PCLK2,
+  .I2c123ClockSelection = RCC_I2C123CLKSOURCE_D2PCLK1,
+  .UsbClockSelection = RCC_USBCLKSOURCE_PLL3,
+  .RTCClockSelection = RCC_RTCCLKSOURCE_LSE,
+  .RngClockSelection = RCC_RNGCLKSOURCE_HSI48
+};

@@ -32,6 +32,9 @@ default:
 - enabled-by:
   - arm/nucleo-h755zi
   value: STM32H755xx
+- enabled-by:
+  - arm/nucleo-h753zi
+  value: STM32H753xx
 - enabled-by: true
   value: STM32H743xx
 description: |

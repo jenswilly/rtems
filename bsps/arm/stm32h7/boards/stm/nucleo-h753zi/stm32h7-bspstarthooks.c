@@ -25,61 +25,55 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef LIBBSP_ARM_STM32H7_BSP_H
-#define LIBBSP_ARM_STM32H7_BSP_H
+#include <bsp.h>
+#include <bsp/bootcard.h>
+#include <bsp/linker-symbols.h>
+#include <bsp/start.h>
+#include <stm32h7/hal.h>
+#include <stm32h7/memory.h>
+#include <stm32h7/mpu-config.h>
+#include <rtems/score/armv7m.h>
 
-#include <bsp/default-initial-extension.h>
-#include <bspopts.h>
-#include <rtems.h>
+#include <string.h>
 
-#ifdef __cplusplus
-extern "C" {
+void bsp_start_hook_0(void)
+{
+  if ((RCC->AHB3ENR & RCC_AHB3ENR_FMCEN) == 0) {
+    /*
+     * Only perform the low-level initialization if necessary.  An initialized
+     * FMC indicates that a boot loader already performed the low-level
+     * initialization.
+     */
+    SystemInit();
+    stm32h7_init_power();
+    stm32h7_init_oscillator();
+    stm32h7_init_clocks();
+    stm32h7_init_peripheral_clocks();
+    HAL_RCC_MCOConfig(RCC_MCO1, RCC_MCO1SOURCE_HSI, RCC_MCODIV_1);
+    HAL_Init();
+  }
+
+#if __CORTEX_M == 0x07U
+  if ((SCB->CCR & SCB_CCR_IC_Msk) == 0) {
+    SCB_EnableICache();
+  }
+
+  if ((SCB->CCR & SCB_CCR_DC_Msk) == 0) {
+    SCB_EnableDCache();
+  }
+
+#ifdef STM32H7_ENABLE_MPU_ALIGNMENT
+  _ARMV7M_MPU_Setup(ARMV7M_MPU_CTRL_DEFAULT, stm32h7_config_mpu_region, stm32h7_config_mpu_region_count);
 #endif
-
-/**
- * @defgroup RTEMSBSPsARMSTM32H7 STM32H7
- *
- * @ingroup RTEMSBSPsARM
- *
- * @brief STM32H7 Board Support Package.
- *
- * @{
- */
-
-#define BSP_FEATURE_IRQ_EXTENSION
-
-#define BSP_ARMV7M_IRQ_PRIORITY_DEFAULT (13 << 4)
-
-#define BSP_ARMV7M_SYSTICK_PRIORITY (14 << 4)
-
-#define BSP_ARMV7M_SYSTICK_FREQUENCY stm32h7_systick_frequency()
-
-uint32_t stm32h7_systick_frequency(void);
-
-/* default functions */
-void stm32h7_init_power(void);
-void stm32h7_init_oscillator(void);
-void stm32h7_init_clocks(void);
-void stm32h7_init_peripheral_clocks(void);
-void stm32h7_init_qspi(void);
-void SystemInit_ExtMemCtl(void);
-
-/**
- * @brief Register SPI interfaces
- *
- * This initializes and registers the configured SPI devices with the RTEMS SPI
- * framework. SPI devices are configured at BSP build time.
- */
-void stm32h7_register_spi_devices(void);
-
-/* GPIO pin config */
-#define BSP_GPIO_PIN_COUNT     128
-#define BSP_GPIO_PINS_PER_BANK 32
-
-/** @} */
-
-#ifdef __cplusplus
+#endif
 }
-#endif
 
-#endif /* LIBBSP_ARM_STM32H7_BSP_H */
+void bsp_start_hook_1(void)
+{
+  bsp_start_copy_sections_compact();
+#if __CORTEX_M == 0x07U
+  SCB_CleanDCache();
+  SCB_InvalidateICache();
+#endif
+  bsp_start_clear_bss();
+}

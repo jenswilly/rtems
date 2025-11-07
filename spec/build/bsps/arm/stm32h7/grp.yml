@@ -133,6 +133,8 @@ links:
 - role: build-dependency
   uid: ../../optconsolebaud
 - role: build-dependency
+  uid: optnucleoh753zi
+- role: build-dependency
   uid: ../../optconsoleirq
 - role: build-dependency
   uid: ../grp

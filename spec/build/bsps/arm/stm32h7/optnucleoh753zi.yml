@@ -1,0 +1,19 @@
+SPDX-License-Identifier: CC-BY-SA-4.0 OR BSD-2-Clause
+actions:
+- get-boolean: null
+- define-condition: null
+build-type: option
+copyrights:
+- Copyright (C) 2025 Jens Willy Johannsen <jens@jenswilly.dk>
+default:
+- enabled-by:
+  - arm/nucleo-h753zi
+  value: true
+- enabled-by: true
+  value: false
+description: |
+  true if board is Nucleo-H753ZI
+enabled-by: true
+links: []
+name: IS_NUCLEO_H753ZI
+type: build
